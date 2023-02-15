@@ -2,18 +2,22 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 import unittest
+import time
 
 class WebTest(unittest.TestCase):
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         options = webdriver.ChromeOptions()
         options.add_experimental_option("detach", True)
-        self.serv_obj = Service("C:\Drivers\chromedriver_win32\chromedriver.exe")
-        self.driver = webdriver.Chrome(options=options,service=self.serv_obj)
-        self.driver.implicitly_wait(10)
+        serv_obj = Service("C:\Drivers\chromedriver_win32\chromedriver.exe")
+        cls.driver = webdriver.Chrome(options=options,service=serv_obj)
+        cls.driver.implicitly_wait(10)
+        cls.driver.maximize_window()
+
+    def setUp(self):
         self.driver.get("https://www.axesslogistics.se/")
-        self.driver.maximize_window()
-    
+        
     # Test som verifierar om länken "VÅRA TJÄNSTER" leder till förväntad rubrik
     def test_link_path(self):
         link_vara_tjanster = self.driver.find_element(By.XPATH,"//a[@role='button'][normalize-space()='Våra tjänster']")
@@ -21,6 +25,7 @@ class WebTest(unittest.TestCase):
         link_vara_tjanster.click()
         actual = self.driver.find_element(By.XPATH,"//*[@id='section_196']/p").text.upper()
         self.assertEqual(expected,actual)
+        time.sleep(5)
 
     # Test som verifierar om att byta land till norges hemsida fungerar
     def test_open_linked_homepage(self):
@@ -38,17 +43,14 @@ class WebTest(unittest.TestCase):
         actual = self.driver.find_element(By.XPATH,"//p[@class='language-text'][normalize-space()='LANGUAGE']").text
         expected = "LANGUAGE"
         self.assertEqual(expected,actual)
-
-
-    
-
-    
-    
-
-        
+        time.sleep(5)     
 
     def tearDown(self):
-        self.driver.close()
+        self.driver.delete_all_cookies()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.driver.quit()
 
 
 if __name__ == "__main__":
