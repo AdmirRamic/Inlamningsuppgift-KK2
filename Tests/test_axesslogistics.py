@@ -12,7 +12,7 @@ class WebTest(unittest.TestCase):
         options.add_experimental_option("detach", True)
         serv_obj = Service("C:\Drivers\chromedriver_win32\chromedriver.exe")
         cls.driver = webdriver.Chrome(options=options,service=serv_obj)
-        cls.driver.implicitly_wait(10)
+        cls.driver.implicitly_wait(5)
         cls.driver.maximize_window()
 
     def setUp(self):
