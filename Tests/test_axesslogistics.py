@@ -25,7 +25,6 @@ class WebTest(unittest.TestCase):
         link_vara_tjanster.click()
         actual = self.driver.find_element(By.XPATH,"//*[@id='section_196']/p").text.upper()
         self.assertEqual(expected,actual)
-        time.sleep(5)
 
     # Test som verifierar om att byta land till norges hemsida fungerar
     def test_open_linked_homepage(self):
@@ -37,13 +36,20 @@ class WebTest(unittest.TestCase):
         actual = self.driver.current_url
         self.assertEqual(expected,actual)
 
+    # Test som verifierar om att byta språk verkligen byter språk till engelska
     def test_change_language(self):
         self.driver.find_element(By.XPATH,"/html/body/div[3]/div[4]/div/div[5]/section/p[2]").click()
         self.driver.find_element(By.XPATH,"//a[normalize-space()='English']").click()
         actual = self.driver.find_element(By.XPATH,"//p[@class='language-text'][normalize-space()='LANGUAGE']").text
         expected = "LANGUAGE"
         self.assertEqual(expected,actual)
-        time.sleep(5)     
+
+    #  Test som verifierar om Malmö anläggningen finns med och att adressuppgifterna stämmer
+    def test_address(self):
+        self.driver.find_element(By.XPATH,"(//a)[24]").click()
+        address = self.driver.find_element(By.XPATH,"//section[@id='section_494']").text
+        expected = "MALMÖ\nBox 50331, 202 12 Malmö\nBESÖKSADRESS:\nFrihamnsallén 20, 211 20 Malmö"
+        self.assertEqual(expected,address) 
 
     def tearDown(self):
         self.driver.delete_all_cookies()
