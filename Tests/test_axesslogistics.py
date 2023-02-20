@@ -66,6 +66,14 @@ class WebTest(unittest.TestCase):
         expected ="Felaktigt användarnamn eller lösenord"
         self.assertEqual(expected,pop_up)
 
+    # Testar om man kommer tillbaka till startsidan när man klickar på AxessLogistics loggo
+    def test_back_to_main_page(self):
+        main_title = self.driver.title
+        self.driver.find_element(By.XPATH,"(//a[normalize-space()='Nyheter'])[1]").click()
+        under_page_title = self.driver.title
+        self.assertEqual(under_page_title,"One Master - News Archive")
+        self.driver.find_element(By.XPATH,"//a[@href='/sv']//img").click()
+        self.assertEqual(main_title,self.driver.title)
 
     def tearDown(self):
         self.driver.delete_all_cookies()
