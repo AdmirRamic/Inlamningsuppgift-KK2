@@ -8,10 +8,10 @@ class WebTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        options = webdriver.ChromeOptions()
-        options.add_experimental_option("detach", True)
+        #options = webdriver.ChromeOptions()
+        #options.add_experimental_option("detach", True)
         serv_obj = Service("C:\Drivers\chromedriver_win32\chromedriver.exe")
-        cls.driver = webdriver.Chrome(options=options,service=serv_obj)
+        cls.driver = webdriver.Chrome(service=serv_obj)
         cls.driver.implicitly_wait(5)
         cls.driver.maximize_window()
 
@@ -49,7 +49,31 @@ class WebTest(unittest.TestCase):
         self.driver.find_element(By.XPATH,"(//a)[24]").click()
         address = self.driver.find_element(By.XPATH,"//section[@id='section_494']").text
         expected = "MALMÖ\nBox 50331, 202 12 Malmö\nBESÖKSADRESS:\nFrihamnsallén 20, 211 20 Malmö"
-        self.assertEqual(expected,address) 
+        self.assertEqual(expected,address)
+
+    # Test som verifierar om man får felmeddelande "Felaktigt användarenamn eller lösenord" 
+    # när man försöker logga in med ogiltiga uppgifter
+
+    def test_invalid_login(self):
+        self.driver.find_element(By.XPATH,"(//img[contains(@class,'login-icon')])[1]").click()
+        self.driver.find_element(By.XPATH,"//a[@href='/User/Login']").click()
+        self.driver.find_element(By.ID,"User_UserName").send_keys("peter.petersson@hotmail.com")
+        self.driver.find_element(By.ID,"User_Password").send_keys("Selenium")
+        time.sleep(2)
+        self.driver.find_element(By.XPATH,"//*[@id='cookieNotification']/div[2]/div/div/a").click()
+        self.driver.find_element(By.XPATH,"//button[normalize-space()='Logga in']").click()
+        pop_up = self.driver.find_element(By.XPATH,"//article[@class='alertify-log alertify-log-error alertify-log-show']").text
+        expected ="Felaktigt användarnamn eller lösenord"
+        self.assertEqual(expected,pop_up)
+
+    # Testar om man kommer tillbaka till startsidan när man klickar på AxessLogistics loggo
+    def test_back_to_main_page(self):
+        main_title = self.driver.title
+        self.driver.find_element(By.XPATH,"(//a[normalize-space()='Nyheter'])[1]").click()
+        under_page_title = self.driver.title
+        self.assertEqual(under_page_title,"One Master - News Archive")
+        self.driver.find_element(By.XPATH,"//a[@href='/sv']//img").click()
+        self.assertEqual(main_title,self.driver.title)
 
     def tearDown(self):
         self.driver.delete_all_cookies()
