@@ -4,18 +4,14 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import unittest
-import time
 
 class WebTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        #options = webdriver.ChromeOptions()
-        #options.add_experimental_option("detach", True)
         serv_obj = Service("C:\Drivers\chromedriver_win32\chromedriver.exe")
         cls.driver = webdriver.Chrome(service=serv_obj)
         cls.mywait = WebDriverWait(cls.driver,10)
-        #cls.driver.implicitly_wait(5)
         cls.driver.maximize_window()
 
     def setUp(self):
@@ -25,9 +21,9 @@ class WebTest(unittest.TestCase):
     # Test som verifierar om länken "VÅRA TJÄNSTER" leder till förväntad rubrik
     def test_link_path(self):
         link_vara_tjanster = self.driver.find_element(By.XPATH,"//a[@role='button'][normalize-space()='Våra tjänster']")
-        expected = link_vara_tjanster.text.upper()
+        expected = (link_vara_tjanster.text).upper()
         link_vara_tjanster.click()
-        actual = self.driver.find_element(By.XPATH,"//*[@id='section_196']/p").text.upper()
+        actual = (self.mywait.until(EC.element_to_be_clickable((By.XPATH,"//*[@id='section_196']/p"))).text).upper()
         self.assertEqual(expected,actual)
 
     # Test som verifierar om att byta språk verkligen byter språk till engelska
