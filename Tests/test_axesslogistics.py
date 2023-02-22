@@ -1,6 +1,8 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import unittest
 import time
 
@@ -12,11 +14,13 @@ class WebTest(unittest.TestCase):
         #options.add_experimental_option("detach", True)
         serv_obj = Service("C:\Drivers\chromedriver_win32\chromedriver.exe")
         cls.driver = webdriver.Chrome(service=serv_obj)
-        cls.driver.implicitly_wait(5)
+        cls.mywait = WebDriverWait(cls.driver,10)
+        #cls.driver.implicitly_wait(5)
         cls.driver.maximize_window()
 
     def setUp(self):
         self.driver.get("https://www.axesslogistics.se/")
+        self.mywait.until(EC.element_to_be_clickable((By.XPATH,"(//a[normalize-space()='Acceptera'])[1]"))).click()
         
     # Test som verifierar om länken "VÅRA TJÄNSTER" leder till förväntad rubrik
     def test_link_path(self):
@@ -26,20 +30,10 @@ class WebTest(unittest.TestCase):
         actual = self.driver.find_element(By.XPATH,"//*[@id='section_196']/p").text.upper()
         self.assertEqual(expected,actual)
 
-    # Test som verifierar om att byta land till norges hemsida fungerar
-    def test_open_linked_homepage(self):
-        self.driver.find_element(By.XPATH,"//section[@class='section section_Content section_1457 js-country-icon hidden-xs']//p[@class='flag-blue-text'][normalize-space()='BYT LAND']").click()
-        self.driver.find_element(By.LINK_TEXT,"AXESS.NO").click()
-        windowsIDs = self.driver.window_handles
-        self.driver.switch_to.window(windowsIDs[1])
-        expected = "https://www.axesslogistics.no/"
-        actual = self.driver.current_url
-        self.assertEqual(expected,actual)
-
     # Test som verifierar om att byta språk verkligen byter språk till engelska
     def test_change_language(self):
         self.driver.find_element(By.XPATH,"/html/body/div[3]/div[4]/div/div[5]/section/p[2]").click()
-        self.driver.find_element(By.XPATH,"//a[normalize-space()='English']").click()
+        self.mywait.until(EC.element_to_be_clickable((By.XPATH,"(//a[normalize-space()='English'])[1]"))).click()
         actual = self.driver.find_element(By.XPATH,"//p[@class='language-text'][normalize-space()='LANGUAGE']").text
         expected = "LANGUAGE"
         self.assertEqual(expected,actual)
@@ -53,18 +47,15 @@ class WebTest(unittest.TestCase):
 
     # Test som verifierar om man får felmeddelande "Felaktigt användarenamn eller lösenord" 
     # när man försöker logga in med ogiltiga uppgifter
-
     def test_invalid_login(self):
         self.driver.find_element(By.XPATH,"(//img[contains(@class,'login-icon')])[1]").click()
-        self.driver.find_element(By.XPATH,"//a[@href='/User/Login']").click()
+        self.mywait.until(EC.element_to_be_clickable((By.XPATH,"//a[@href='/User/Login']"))).click()
         self.driver.find_element(By.ID,"User_UserName").send_keys("peter.petersson@hotmail.com")
         self.driver.find_element(By.ID,"User_Password").send_keys("Selenium")
-        time.sleep(2)
-        self.driver.find_element(By.XPATH,"//*[@id='cookieNotification']/div[2]/div/div/a").click()
         self.driver.find_element(By.XPATH,"//button[normalize-space()='Logga in']").click()
-        pop_up = self.driver.find_element(By.XPATH,"//article[@class='alertify-log alertify-log-error alertify-log-show']").text
+        pop_up = self.mywait.until(EC.presence_of_element_located((By.XPATH,"//article[@class='alertify-log alertify-log-error alertify-log-show']")))
         expected ="Felaktigt användarnamn eller lösenord"
-        self.assertEqual(expected,pop_up)
+        self.assertEqual(expected,pop_up.text)
 
     # Testar om man kommer tillbaka till startsidan när man klickar på AxessLogistics loggo
     def test_back_to_main_page(self):
@@ -74,6 +65,28 @@ class WebTest(unittest.TestCase):
         self.assertEqual(under_page_title,"One Master - News Archive")
         self.driver.find_element(By.XPATH,"//a[@href='/sv']//img").click()
         self.assertEqual(main_title,self.driver.title)
+
+    # Testar om man får rätt nyhetsartikel som länker hänvisar till
+    def test_right_news_article(self):
+        self.driver.find_element(By.XPATH,"(//a[normalize-space()='Nyheter'])[1]").click()
+        news_link = self.mywait.until(EC.presence_of_element_located((By.XPATH,"//a[normalize-space()='Transportinformation v.7']")))
+        news_link_text = (news_link.text).upper()
+        news_link.click()
+        news_header_text = (self.driver.find_element(By.XPATH,"//h1[normalize-space()='Transportinformation v.7']").text).upper()
+        header_content = news_link_text in news_header_text
+        self.assertTrue(header_content)
+
+    # Test som verifierar om att byta land till norges hemsida fungerar
+    def test_open_linked_homepage(self):
+        self.driver.find_element(By.XPATH,"//section[@class='section section_Content section_1457 js-country-icon hidden-xs']//p[@class='flag-blue-text'][normalize-space()='BYT LAND']").click()
+        self.mywait.until(EC.element_to_be_clickable((By.LINK_TEXT,"AXESS.NO"))).click()
+        windowsIDs = self.driver.window_handles
+        self.driver.switch_to.window(windowsIDs[1])
+        expected = "https://www.axesslogistics.no/"
+        actual = self.driver.current_url
+        self.assertEqual(expected,actual)
+        self.driver.close()
+        self.driver.switch_to.window(windowsIDs[0])
 
     def tearDown(self):
         self.driver.delete_all_cookies()
