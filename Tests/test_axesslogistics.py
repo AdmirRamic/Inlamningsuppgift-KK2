@@ -18,7 +18,7 @@ class WebTest(unittest.TestCase):
         self.driver.get("https://www.axesslogistics.se/")
         self.mywait.until(EC.element_to_be_clickable((By.XPATH,"(//a[normalize-space()='Acceptera'])[1]"))).click()
         
-    # Test som verifierar om länken "VÅRA TJÄNSTER" leder till förväntad rubrik
+    # Test som verifierar att länken "VÅRA TJÄNSTER" leder till förväntad rubrik
     def test_link_path(self):
         link_vara_tjanster = self.driver.find_element(By.XPATH,"//a[@role='button'][normalize-space()='Våra tjänster']")
         expected = (link_vara_tjanster.text).upper()
@@ -26,7 +26,7 @@ class WebTest(unittest.TestCase):
         actual = (self.mywait.until(EC.element_to_be_clickable((By.XPATH,"//*[@id='section_196']/p"))).text).upper()
         self.assertEqual(expected,actual)
 
-    # Test som verifierar om att byta språk verkligen byter språk till engelska
+    # Test som verifierar att byta språk verkligen byter språk till engelska
     def test_change_language(self):
         self.driver.find_element(By.XPATH,"/html/body/div[3]/div[4]/div/div[5]/section/p[2]").click()
         self.mywait.until(EC.element_to_be_clickable((By.XPATH,"(//a[normalize-space()='English'])[1]"))).click()
@@ -34,14 +34,14 @@ class WebTest(unittest.TestCase):
         expected = "LANGUAGE"
         self.assertEqual(expected,actual)
 
-    #  Test som verifierar om Malmö anläggningen finns med och att adressuppgifterna stämmer
+    #  Test som verifierar att Malmö anläggningen finns med och att adressuppgifterna stämmer
     def test_address(self):
         self.driver.find_element(By.XPATH,"(//a)[24]").click()
         address = self.driver.find_element(By.XPATH,"//section[@id='section_494']").text
         expected = "MALMÖ\nBox 50331, 202 12 Malmö\nBESÖKSADRESS:\nFrihamnsallén 20, 211 20 Malmö"
         self.assertEqual(expected,address)
 
-    # Test som verifierar om man får felmeddelande "Felaktigt användarenamn eller lösenord" 
+    # Test som verifierar att man får felmeddelande "Felaktigt användarenamn eller lösenord" 
     # när man försöker logga in med ogiltiga uppgifter
     def test_invalid_login(self):
         self.driver.find_element(By.XPATH,"(//img[contains(@class,'login-icon')])[1]").click()
@@ -72,7 +72,7 @@ class WebTest(unittest.TestCase):
         header_content = news_link_text in news_header_text
         self.assertTrue(header_content)
 
-    # Test som verifierar om att byta land till norges hemsida fungerar
+    # Test som verifierar att byta land till norges hemsida fungerar
     def test_open_linked_homepage(self):
         self.driver.find_element(By.XPATH,"//section[@class='section section_Content section_1457 js-country-icon hidden-xs']//p[@class='flag-blue-text'][normalize-space()='BYT LAND']").click()
         self.mywait.until(EC.element_to_be_clickable((By.LINK_TEXT,"AXESS.NO"))).click()
