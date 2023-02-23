@@ -65,10 +65,10 @@ class WebTest(unittest.TestCase):
     # Testar om man får rätt nyhetsartikel som länker hänvisar till
     def test_right_news_article(self):
         self.driver.find_element(By.XPATH,"(//a[normalize-space()='Nyheter'])[1]").click()
-        news_link = self.mywait.until(EC.presence_of_element_located((By.XPATH,"//a[normalize-space()='Transportinformation v.7']")))
+        news_link = self.mywait.until(EC.presence_of_element_located((By.XPATH,"//article[1]/div/div/h3/a")))
         news_link_text = (news_link.text).upper()
         news_link.click()
-        news_header_text = (self.driver.find_element(By.XPATH,"//h1[normalize-space()='Transportinformation v.7']").text).upper()
+        news_header_text = (self.driver.find_element(By.CSS_SELECTOR,".article-title").text).upper()
         header_content = news_link_text in news_header_text
         self.assertTrue(header_content)
 
