@@ -1,12 +1,15 @@
-/* Requires the Docker Pipeline plugin */
 pipeline {
-    agent any 
+    agent any
+
     stages {
-        stage("build") {
+        stage('build') {
             steps {
-                echo 'något något'
-                //sh 'python --version'
+                dir('C:/Python Programing/P4Test/Inlamningsuppgift-KK2/Tests') {
+                    bat 'python -m unittest'
+                }
+                
             }
         }
     }
 }
+
