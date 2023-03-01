@@ -50,7 +50,7 @@ class WebTest(unittest.TestCase):
         self.driver.find_element(By.ID,"User_Password").send_keys("Selenium")
         self.driver.find_element(By.XPATH,"//button[normalize-space()='Logga in']").click()
         pop_up = self.mywait.until(EC.presence_of_element_located((By.XPATH,"//article[@class='alertify-log alertify-log-error alertify-log-show']")))
-        expected ="Felaktigt användarnamn eller lösenord"
+        expected ="Felaktigt användarnamn eller lösenor"
         self.assertEqual(expected,pop_up.text)
 
     # Testar om man kommer tillbaka till startsidan när man klickar på AxessLogistics loggo
