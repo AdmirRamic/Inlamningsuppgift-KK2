@@ -30,9 +30,10 @@ class WebTest(unittest.TestCase):
     def test_change_language(self):
         self.driver.find_element(By.XPATH,"/html/body/div[3]/div[4]/div/div[5]/section/p[2]").click()
         self.mywait.until(EC.element_to_be_clickable((By.XPATH,"(//a[normalize-space()='English'])[1]"))).click()
-        actual = self.driver.find_element(By.XPATH,"//p[@class='language-text'][normalize-space()='LANGUAGE']").text
+        #actual = self.driver.find_element(By.XPATH,"//p[@class='language-text'][normalize-space()='LANGUAGE']").text
+        actual = self.mywait.until(EC.presence_of_element_located((By.XPATH,"//p[@class='language-text'][normalize-space()='LANGUAGE']")))
         expected = "LANGUAGE"
-        self.assertEqual(expected,actual)
+        self.assertEqual(expected,actual.text)
 
     #  Test som verifierar att Malmö anläggningen finns med och att adressuppgifterna stämmer
     def test_address(self):
