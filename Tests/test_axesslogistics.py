@@ -91,7 +91,3 @@ class WebTest(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         cls.driver.quit()
-
-    if __name__ == "__main__":
-        unittest.main() 
-    #
