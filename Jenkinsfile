@@ -5,7 +5,7 @@ pipeline {
         stage('Test') {
             steps {
                 dir('C:/Users/Admir/.jenkins/workspace/Inlamningsuppgift(KK2)/Tests'){ 
-                    bat 'python -m unittest'
+                    bat 'python -m unittest -v'
                 }
             }
         }
